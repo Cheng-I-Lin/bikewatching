@@ -84,6 +84,8 @@ map.on("load", async () => {
       .domain([0, d3.max(stations, (d) => d.totalTraffic)])
       .range([0, 25]);
 
+    let stationFlow = d3.scaleQuantize().domain([0, 1]).range([0, 0.5, 1]);
+
     // Append circles to the SVG for each station
     const circles = svg
       .selectAll("circle")
@@ -102,7 +104,10 @@ map.on("load", async () => {
           .text(
             `${d.totalTraffic} trips (${d.departures} departures, ${d.arrivals} arrivals)`
           );
-      });
+      })
+      .style("--departure-ratio", (d) =>
+        stationFlow(d.departures / d.totalTraffic)
+      );
 
     // Function to update circle positions when the map moves/zooms
     function updatePositions() {
@@ -151,7 +156,10 @@ map.on("load", async () => {
       circles
         .data(filteredStations, (d) => d.short_name) // Ensure D3 tracks elements correctly
         .join("circle") // Ensure the data is bound correctly
-        .attr("r", (d) => radiusScale(d.totalTraffic)); // Update circle sizes
+        .attr("r", (d) => radiusScale(d.totalTraffic)) // Update circle sizes
+        .style("--departure-ratio", (d) =>
+          stationFlow(d.departures / d.totalTraffic)
+        );
     }
 
     timeSlider.addEventListener("input", updateTimeDisplay);
@@ -171,7 +179,6 @@ function formatTime(minutes) {
   const date = new Date(0, 0, 0, 0, minutes); // Set hours & minutes
   return date.toLocaleString("en-US", { timeStyle: "short" }); // Format as HH:MM AM/PM
 }
-
 
 function computeStationTraffic(stations, timeFilter = -1) {
   // Retrieve filtered trips efficiently

@@ -7,6 +7,8 @@ body {
   display: flex;
   justify-content: center; /* Center horizontally */
   align-items: center; /* Center vertically */
+  --color-departures: steelblue;
+  --color-arrivals: darkorange;
 }
 
 #map {
@@ -25,6 +27,12 @@ body {
 
   circle {
     pointer-events: auto;
+    --color: color-mix(
+      in oklch,
+      var(--color-departures) calc(100% * var(--departure-ratio)),
+      var(--color-arrivals)
+    );
+    fill: var(--color);
   }
 }
 
@@ -32,6 +40,7 @@ header {
   display: flex;
   gap: 1em;
   align-items: baseline;
+  align-self: stretch;
 
   label {
     margin-left: auto;
@@ -39,11 +48,42 @@ header {
 
   time {
     display: block;
+    text-align: right;
   }
 
   em {
     display: block;
     font: italic;
     color: gray;
+    text-align: right;
   }
+}
+
+.legend {
+  display: flex;
+  margin-block: 1em;
+  gap: 1px;
+  align-self: stretch;
+}
+.legend > div {
+  --color: color-mix(
+    in oklch,
+    var(--color-departures) calc(100% * var(--departure-ratio)),
+    var(--color-arrivals)
+  );
+  flex: 1;
+  text-align: center;
+  background: var(--color);
+  color: white;
+  padding: 0.2em 1em;
+}
+
+#depart {
+  text-align: left;
+}
+#balance {
+  text-align: center;
+}
+#arrive {
+  text-align: right;
 }
